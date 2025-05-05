@@ -1,0 +1,298 @@
+@use "./fonts.scss";
+@use "./tooltip.scss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* Move problematic styles outside of @layer blocks */
+/* This fixes the processing error */
+
+@layer base {
+    html,
+    body,
+    #app {
+        height: 1px;
+        min-height: 100%;
+    }
+
+    .shopify-root {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "San Francisco", "Segoe UI", Roboto, "Helvetica Neue", oswald, sans-serif;
+        font-size: 13px;
+        color: #303030;
+        width: 100vw;
+        height: 100vh;
+
+        * {
+            font-family: inherit;
+            font-size: inherit;
+            color: inherit;
+        }
+    }
+
+    input[type=number] {
+        &::-webkit-inner-spin-button,
+        &::-webkit-outer-spin-button {
+            opacity: 1;
+        }
+
+        &.appearance-none {
+            &::-webkit-outer-spin-button,
+            &::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                -moz-appearance: textfield;
+                margin: 0;
+                appearance: none;
+            }
+        }
+    }
+
+    #nprogress .bar {
+        background: #222222 !important;
+        height: 3px !important;
+    }
+
+    :focus-visible {
+        outline: none;
+    }
+}
+
+@layer components {
+    .btn-danger {
+        @apply inline-flex items-center px-4 py-2 bg-red-600 rounded-md text-xs text-white hover:bg-red-500 active:bg-red-700 focus:ring-2 focus:ring-red-500 transition duration-150 disabled:opacity-25;
+    }
+
+    .btn-primary {
+        @apply inline-flex items-center px-4 py-2 bg-primary border border-transparent rounded-md text-xs text-white hover:bg-primary active:bg-primary transition duration-150 disabled:opacity-25;
+    }
+
+    .inp-no-style {
+        @apply block border-0 bg-transparent text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6;
+    }
+
+    .btn-sm {
+        @apply px-3 py-1 capitalize;
+    }
+
+    .checkbox-shopify {
+        @apply border text-gray-700 border-gray-300 rounded-sm transition-all cursor-pointer hover:border-gray-400 hover:bg-gray-50 active:ring-0 focus:ring-0 w-[18px] h-[18px];
+
+        &.all:not(:checked) {
+            /* Replace the @apply bg-gray-700 with direct CSS */
+            background-color: #374151; /* This is the gray-700 color */
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            &::after {
+                content: '';
+                position: absolute;
+                width: 60%;
+                height: 2px;
+                border-radius: 2px;
+                background-color: white;
+            }
+        }
+    }
+
+    @mixin btn-shopify {
+        font-size: 12px;
+        font-weight: 600;
+        padding: 6px 12px;
+        line-height: 16px;
+        border: solid 1px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.2s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        min-width: 65px;
+
+        &:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+            box-shadow: none;
+        }
+
+        &.small {
+            padding: 4px 8px;
+            font-size: 10px;
+            line-height: 14px;
+        }
+    }
+
+    .btn-shopify-primary {
+        @include btn-shopify;
+
+        background-color: #333;
+        border-color: #333;
+        color: #fff;
+
+        &:hover {
+            background-color: #222; // Slightly darker on hover
+        }
+
+        &:active {
+            background-color: #111;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        &:disabled {
+            background-color: #bbb;
+            border-color: #bbb;
+        }
+    }
+
+    .btn-shopify-danger {
+        @include btn-shopify;
+
+        background-color: #c00;
+        border-color: #c00;
+        color: #fff;
+
+        &:hover {
+            background-color: #a00;
+        }
+
+        &:active {
+            background-color: #900;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        &:disabled {
+            border-color: #cc000034;
+        }
+    }
+
+    .btn-shopify-secondary {
+        @include btn-shopify;
+        /* Replace the @apply with direct CSS */
+        &:hover {
+            background-color: #f9fafb; /* gray-50 */
+        }
+        background-color: white;
+        border-color: #d1d5db; /* gray-300 */
+    }
+
+    .inp-shopify {
+        /* Replace the @apply with direct CSS */
+        display: flex;
+        align-items: center;
+        border: 1px solid #6b7280; /* gray-500 */
+        border-radius: 0.375rem;
+        padding: 0.375rem 0.75rem;
+        background-color: #f9fafb; /* gray-50 */
+        transition: all 0.2s;
+        font-size: 0.875rem;
+
+        &:hover {
+            background-color: transparent;
+        }
+
+        &:disabled {
+            background-color: #f3f4f6; /* gray-100 */
+            border-color: #e5e7eb; /* gray-200 */
+        }
+
+        &:disabled::placeholder {
+            color: #d1d5db; /* gray-300 */
+        }
+
+        &:focus-within {
+            box-shadow: 0 0 0 2px #007a5c; /* primary */
+            border-color: transparent;
+        }
+
+        &:disabled {
+            opacity: 0.75;
+        }
+
+        input {
+            padding: 0;
+        }
+    }
+
+    .select-shopify {
+        /* Replace the @apply with direct CSS */
+        display: block;
+        width: 100%;
+        border-radius: 0.375rem;
+        border: 1px solid;
+        background-color: #f9fafb; /* gray-50 */
+        padding: 0.375rem 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .active-green {
+        background: #059669 !important;
+    }
+}
+
+/* Move date picker styles outside of component layer to avoid Tailwind processing */
+.dp__input {
+    font-size: 0.75rem !important;
+    padding: 0.375rem 0.5rem !important;
+    border-radius: 0.375rem !important;
+    border: 1px solid #d1d5db !important;
+    width: 164px !important;
+}
+
+.dp__main {
+    font-size: 0.75rem !important;
+}
+
+.dp__input_icon {
+    display: none !important;
+}
+
+/* Theme color customization */
+.dp__active_date {
+    background-color: #007a5c !important;
+}
+
+.dp__today {
+    border: 1px solid #007a5c !important;
+}
+
+.dp__range_between {
+    background-color: #007a5c20 !important;
+}
+
+.dp__range_start,
+.dp__range_end {
+    background-color: #007a5c !important;
+}
+
+.dp__action_select {
+    color: #ffffff !important;
+}
+
+.dp__action_cancel {
+    color: #000000 !important;
+}
+
+@layer utilities {
+    :not(.default-scrollbar) {
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: #0003;
+            border-radius: 8px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        &::-webkit-scrollbar-track {
+            border-radius: 8px;
+        }
+    }
+}
+
+:root {
+    --ms-ring-color: var(--tw-ring-color);
+}

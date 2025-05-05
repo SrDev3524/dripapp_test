@@ -1,0 +1,316 @@
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.gs-uploader-wrapper,
+.gs--wrapper {
+  width: 100%;
+  max-width: 500px;
+  font-size: 13px !important;
+}
+
+#gs-file-drop-zone {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 220px;
+  border: 2px dashed var(--gs--button-bg, #000000);
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 10px 0;
+}
+
+#gs-file-drop-zone.drag-over,
+#gs-file-drop-zone:hover {
+  background-color: rgba(0, 122, 92, 0.0705882353);
+}
+
+#gs-file-drop-zone .gs-browse-button {
+  background-color: var(--gs--button-bg, #000000);
+  color: var(--gs--button-fg, #ffffff);
+  padding: 6px 12px;
+  text-align: center;
+  border-radius: 100px;
+  margin: 10px 0;
+  border: none;
+  width: -moz-max-content;
+  width: max-content;
+  font-size: 16px;
+}
+
+#gs-file-drop-zone svg {
+  color: var(--gs--button-bg, #000000);
+  fill: var(--gs--button-bg, #000000) !important;
+}
+
+.gs--button {
+  background-color: var(--gs--button-bg, #000000);
+  color: var(--gs--button-fg, #ffffff);
+  padding: 8px 16px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 6px;
+  margin: 10px 0;
+  width: 100%;
+  font-size: 14px;
+  border: none;
+  line-height: 24px;
+}
+
+.gs--button:disabled {
+  opacity: 0.5;
+}
+
+.gs--button label {
+  margin-bottom: 0 !important;
+  line-height: 2.5rem;
+  font-family: inherit;
+}
+
+#gs-errors {
+  width: 100%;
+}
+
+#gs-errors .gs--alert {
+  width: 100%;
+  padding: 0.25rem 0.5rem;
+  margin: 0.5rem 0;
+  border-radius: 3px;
+  text-align: center;
+  animation: fadeIn 3s;
+  font-size: 12px;
+  position: relative;
+}
+
+#gs-errors .gs--alert.gs--alert-danger {
+  background-color: #ae0000;
+  color: #ffffff;
+}
+
+#gs-errors .gs--alert.gs--alert-danger.remove {
+  animation: fadeOut 1s;
+}
+
+#gs-errors .gs--alert.gs--alert-danger .gs--alert-close {
+  padding: 0.25rem;
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 0;
+}
+
+.gs-file-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 250px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.gs-uploader-wrapper.gs--uploading .gs-file-container,
+.gs--wrapper.gs--uploading .gs-file-container {
+  position: relative;
+  display: block !important;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  min-height: 50px;
+  background-image: linear-gradient(45deg, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0.2) 25%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 75%, rgba(0, 0, 0, 0.2) 75%, rgba(0, 0, 0, 0.2) 100%);
+}
+
+.gs-uploader-wrapper.gs--uploading #gs-builder-btn,
+.gs--wrapper.gs--uploading #gs-builder-btn {
+  background-color: rgb(225, 225, 225);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.gs-uploader-wrapper.gs--uploading #gs-builder-btn label,
+.gs--wrapper.gs--uploading #gs-builder-btn label {
+  display: none;
+}
+
+.gs-file-container > svg {
+  width: 100%;
+  height: 100%;
+  color: rgba(54, 151, 99, 0.7);
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.gs-file-container .gs-file-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100%;
+  width: 24px;
+  height: 24px;
+  background-color: rgba(0, 0, 0, 0.6);
+  line-height: 24px;
+  padding: 0;
+  outline: solid 1px rgba(0, 0, 0, 0);
+  transition: all 0.4s;
+  position: absolute;
+  right: 0;
+  top: 0;
+  opacity: 0;
+}
+
+.gs-file-container .gs-file-remove:hover {
+  outline-color: #ffffff;
+  transition: all 0.6s;
+}
+
+.gs-file-container .gs-file-info {
+  width: 100%;
+  color: white;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  z-index: 10;
+  position: relative;
+}
+
+.gs-file-container .gs-file-info .gs-file-name {
+  font-size: 11px;
+  line-height: 12px;
+  max-width: 300px;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+.gs-file-container .gs-file-info .gs-file-size {
+  font-size: 10px;
+  line-height: 14px;
+  color: rgba(255, 255, 255, 0.4705882353);
+}
+
+.gs-file-container .gs-file-info svg.spinner {
+  width: 24px;
+  height: 24px;
+  animation: spin infinite 1s linear;
+  position: relative;
+}
+
+.gs-file-container .gs-file-info .gs-file-progress {
+  display: flex;
+  position: relative;
+}
+
+.gs-file-container .gs-file-info .gs-file-progress .gs-file-retry,
+.gs-file-container .gs-file-info .gs-file-progress .gs-file-message {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+  font-size: 10px;
+  line-height: 12px;
+  margin-right: 6px;
+}
+
+.gs-file-container .gs-file-info .gs-file-progress .gs-file-message .undo {
+  font-size: 10px;
+  line-height: 14px;
+  color: rgba(255, 255, 255, 0.4705882353);
+  cursor: pointer;
+}
+
+.gs-file-container .gs-file-info .gs-file-progress .gs-file-message .undo:hover {
+  color: rgba(255, 51, 51, 0.4705882353);
+  transition: color 0.5s;
+  text-decoration: underline;
+}
+
+.gs-file-container .gs-file-info .gs-file-progress .gs-file-retry .retry {
+  font-size: 10px;
+  line-height: 14px;
+  color: rgba(255, 255, 255, 0.4705882353);
+  cursor: pointer;
+}
+
+.gs-file-container .gs-file-info .gs-file-progress .gs-file-retry .retry:hover {
+  color: rgb(75, 255, 234);
+  cursor: pointer;
+}
+
+.gs-file-container .gs-file-info .gs-file-progress:hover .gs-file-remove {
+  display: flex;
+  opacity: 1;
+  transition: all 0.3s;
+}
+
+.gs-upload-image {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 4px;
+  z-index: 0;
+}
+
+.gs-upload-image img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: contain;
+  object-fit: contain;
+}
+
+#gs-file-input {
+  display: none !important;
+}
+
+#gs-add-cart-btn {
+  justify-content: center;
+  align-items: center;
+}
+
+.gs-loader {
+  display: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #FFF;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  box-sizing: border-box;
+  animation: rotation 0.5s linear infinite;
+  margin-right: 5px;
+}
+
+.gs-loader.show {
+  display: inline-block;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
