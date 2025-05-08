@@ -1,6 +1,6 @@
 <script setup>
-import {computed, nextTick, ref} from 'vue'
-import {useDropzone} from "vue3-dropzone"
+import { computed, nextTick, ref } from 'vue'
+import { useDropzone } from "vue3-dropzone"
 
 import UploadIcon from './components/icons/UploadIcon.vue'
 import CloseIcon from './components/icons/CloseIcon.vue'
@@ -15,9 +15,9 @@ import Loading from "./components/Loading.vue"
 import PlusIcon from "./components/icons/PlusIcon.vue"
 import InformationOutlineIcon from "./components/icons/InformationOutlineIcon.vue"
 
-import {gangSheetBuilder} from "./gang-sheet"
-import {APP_PROXIES} from "./constants"
-import {fetchCart} from "./utils.js"
+import { gangSheetBuilder } from "./gang-sheet"
+import { APP_PROXIES } from "./constants"
+import { fetchCart } from "./utils.js"
 
 const CONSTANTS = {
     MAX_LIMIT: 100000,
@@ -40,17 +40,14 @@ const productSettings = {
     bgRemove: (!product.settings.disableBackgroundRemoveTool && product.settings.enableBgRemove) ?? false,
     disableBackgroundRemoveTool: product.settings.disableBackgroundRemoveTool ?? false,
     enablePriceBreakdown: product.settings.enablePriceBreakdown ?? true,
+    enableEachPricePerItem: product.settings.enableEachPricePerItem ?? true,
     upscale: product.settings.enableUpscale ?? false,
     fileTypes: product.settings.file_types ?? ["image/svg+xml", "image/jpg,image/jpeg", "image/png"],
     pricing: {
         type: product.settings.pricing?.type ?? 'flat',
         prices: product.settings.pricing?.prices ?? [],
         price: product.settings.pricing?.price ?? 0.01,
-        matrixData: {
-            sqInRanges: product.settings.pricing?.matrixData?.sqInRanges ?? [],
-            qtyRanges: product.settings.pricing?.matrixData?.qtyRanges ?? [],
-            pricingMatrix: product.settings.pricing?.matrixData?.pricingMatrix ?? []
-        }
+        matrixData: product.settings.pricing?.matrixData
     },
     sizes: [],
     predefinedSizes: {
@@ -512,42 +509,48 @@ const tieredPricing = () => {
     return productSettings.pricing.prices[productSettings.pricing.prices.length - 1]
 }
 
-const perSquarePrice = computed(() => {
-   
-   if (productSettings.pricing.type === 'tiered') {
-        return Number(tieredPricing().price)
-    } else if (productSettings.pricing.type === 'matrix') {
-        const matrixData = productSettings.pricing.matrixData;
+const matrixPricing = () => {
+    const matrixData = productSettings.pricing.matrixData;
+
+    if (matrixData) {
         const eachArea = activeImage.value.eachArea;
         const quantity = parseInt(activeImage.value.quantity);
 
-        let areaRangeIndex = -1;
+        let sqIndex = -1;
         for (let i = 0; i < matrixData.sqInRanges.length; i++) {
             const range = matrixData.sqInRanges[i];
-            if (eachArea >= range.from && eachArea <= range.to) {
-                areaRangeIndex = i;
+
+            if (eachArea >= range.from && (eachArea <= range.to || range.to === null)) {
+                sqIndex = i;
                 break;
             }
         }
 
-        let qtyRangeIndex = -1;
+        let qtyIndex = -1;
         for (let i = 0; i < matrixData.qtyRanges.length; i++) {
             const range = matrixData.qtyRanges[i];
-            if (quantity >= range.from && quantity <= range.to) {
-                qtyRangeIndex = i;
+            if (quantity >= range.from && (quantity <= range.to || range.to === null)) {
+                qtyIndex = i;
                 break;
             }
         }
 
-        if (areaRangeIndex !== -1 && qtyRangeIndex !== -1) {
-            return Number(matrixData.pricingMatrix[qtyRangeIndex][areaRangeIndex]);
+        if (sqIndex !== -1 && qtyIndex !== -1 && matrixData.pricingMatrix[sqIndex][qtyIndex]) {
+            return Number(matrixData.pricingMatrix[sqIndex][qtyIndex]);
         }
-
-        return Number(productSettings.pricing.price);
-    }else {
-        return Number(productSettings.pricing.price)
     }
-});
+
+    return Number(productSettings.pricing.price);
+}
+const perSquarePrice = computed(() => {
+    if (productSettings.pricing.type === 'flat') {
+        return Number(productSettings.pricing.price)
+    } else if (productSettings.pricing.type === 'matrix') {
+        return Number(matrixPricing());
+    } else {
+        return Number(tieredPricing().price)
+    }
+})
 
 const handleAddMoreImages = () => {
     if (!activeImage.value.loading) {
@@ -783,7 +786,7 @@ function translation(text) {
                         </div>
                     </div>
 
-                    <div class="!gs-mt-auto gs-w-full">
+                    <div class="gs-w-full">
                         <template v-if="images[0].uploaded">
                             <div class="gs-text-[13px]">
                                 <div class="gs-flex gs-items-center">
@@ -810,7 +813,7 @@ function translation(text) {
                             </div>
 
                             <div v-if="images[0].uploaded" class="gs-grid gs-grid-cols-4 gs-gap-2">
-                                <template v-for="(image, index) in images" :key="image.url">
+                                <div v-for="(image, index) in images" :key="image.url" class="gs-flex gs-flex-col gs-items-center">
                                     <div v-if="image.uploaded"
                                          class="gs-relative gs-transparent-pattern gs-aspect-square !gs-border gs-rounded gs-cursor-pointer hover:gs-border-color"
                                          :class="{ 'gs-border-color': index === activeImageIndex }"
@@ -821,7 +824,15 @@ function translation(text) {
                                             {{ image.quantity }}
                                         </div>
                                     </div>
-                                </template>
+                                    <template v-if="productSettings.enableEachPricePerItem">
+                                        <div class="gs-text-[12px] gs-text-gray-700">
+                                            {{ image.w }} x {{ image.h }}
+                                        </div>
+                                        <div class="gs-text-[12px] gs-text-gray-700">
+                                            💰 {{ shopSettings.currencySymbol }}{{ image.priceTotal.toFixed(2) }}
+                                        </div>
+                                    </template>
+                                </div>
                                 <button
                                     type="button"
                                     :disabled="activeImage.loading"
